@@ -1,0 +1,75 @@
+{
+  "name": "tree-view-sample-plugin",
+  "publisher": "theia",
+  "keywords": [
+    "theia-plugin"
+  ],
+  "version": "0.0.1",
+  "license": "EPL-2.0",
+  "files": [
+    "src"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "right": [
+        {
+          "id": "comments",
+          "title": "Comments",
+          "icon": "resources/comments.svg"
+        }
+      ]
+    },
+    "views": {
+      "comments": [
+        {
+          "id": "comments",
+          "name": "Comments"
+        },
+        {
+          "id": "todo",
+          "name": "TODO"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "test.context.cmd",
+        "title": "Do something",
+        "category": "Abc"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "test.context.cmd",
+          "when": "viewItem == ext.tv.comment"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "@theia/plugin": "next",
+    "@theia/plugin-packager": "latest",
+    "@types/ftp": "^0.3.10",
+    "rimraf": "2.6.2",
+    "typescript-formatter": "7.2.2",
+    "typescript": "2.9.2"
+  },
+  "dependencies": {
+    "ftp": "^0.3.10"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "format-code": "tsfmt -r",
+    "watch": "tsc -watch",
+    "compile": "tsc",
+    "build": "yarn run format-code && yarn run compile && theia:plugin pack"
+  },
+  "engines": {
+    "theiaPlugin": "next"
+  },
+  "theiaPlugin": {
+    "backend": "lib/tree-view-sample-plugin.js"
+  }
+}
