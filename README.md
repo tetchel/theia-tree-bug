@@ -36,4 +36,41 @@ In Theia, the non-enumerable properties are lost, which means the instanceof che
 This is likely just a symptom of 4975.
 
 To reproduce [4975](https://github.com/theia-ide/theia/issues/4975), uncomment the [`self` and `_self` lines](https://github.com/tetchel/theia-tree-bug/blob/master/src/comments.ts#L8) in the `Comment` class.
-The comments will no longer show up in the TreeView at all.
+The comments will no longer show up in the TreeView at all. You will see errors in the console like:
+```
+root ERROR [hosted-plugin: 58518] (node:58518) UnhandledPromiseRejectionWarning: TypeError: Converting circular structure to JSON
+    at JSON.stringify (<anonymous>)
+    at Function.MessageFactory.replyOK (/Users/tim/programs/clones/theia/packages/plugin-ext/lib/api/rpc-protocol.js:287:107)
+    at /Users/tim/programs/clones/theia/packages/plugin-ext/lib/api/rpc-protocol.js:157:51
+    at processTicksAndRejections (internal/process/task_queues.js:86:5)
+(node:58518) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 4)
+```
+
+An example of the object the rpc-protocol is trying to stringify:
+```
+root ERROR [hosted-plugin: 58518] Couldn't stringify object:
+[{
+    id: 'item-7/ext.tv.comment',
+    label: 'Great plugin!',
+    icon: 'fa-sticky-note medium-red',
+    tooltip: undefined,
+    collapsibleState: undefined,
+    metadata: Comment {
+        text: 'Great plugin!',
+        id: 0,
+        _self: [Circular]
+    }
+},
+{
+    id: 'item-8/ext.tv.comment',
+    label: 'Can you share the link to this example?',
+    icon: 'fa-sticky-note medium-red',
+    tooltip: undefined,
+    collapsibleState: undefined,
+    metadata: Comment {
+        text: 'Can you share the link to this example?',
+        id: 1,
+        _self: [Circular]
+    }
+}]
+```
