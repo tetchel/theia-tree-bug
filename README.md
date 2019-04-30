@@ -6,7 +6,7 @@ This is a smallish sample for reproducing Theia bugs:
 
 Forked from: https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin replacing the simple tree items (strings) with more complex objects.
 
-Build the extension with `yarn run build` and copy it into your `theia/plugins/` directory, then restart Theia to pick up the change. See the [original README](https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin).
+Build the extension with `yarn run build` (or just [download it](https://raw.githubusercontent.com/tetchel/theia-tree-bug/master/tree_view_sample_plugin.theia)) and copy it into your `theia/plugins/` directory, then restart Theia to pick up the change. See the [original README](https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin).
 
 To reproduce [4978](https://github.com/theia-ide/theia/issues/4978), right-click a comment in the tree and run the `Do Something` command.
 See [around line 100 of `comments.ts`](https://github.com/tetchel/theia-tree-bug/blob/master/src/comments.ts#L101) for the command code.
