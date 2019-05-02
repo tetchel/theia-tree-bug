@@ -65,12 +65,11 @@
     "ftp": "^0.3.10"
   },
   "scripts": {
-    "vscode:prepublish": "yarn && yarn run build",
-    "prepare": "yarn run clean && yarn run build",
+    "vscode:prepublish": "yarn",
+    "prepare": "yarn run clean && yarn run compile",
     "clean": "rimraf lib",
     "watch": "tsc -watch",
-    "compile": "tsc",
-    "build": "yarn run compile"
+    "compile": "tsc"
   },
   "engines": {
     "vscode": "^1.33.1"

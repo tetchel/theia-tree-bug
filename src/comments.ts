@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-
+import * as path from "path";
 class Comment {
 
     private static nextId = 0;
@@ -56,7 +56,7 @@ export class Comments {
     selectedUser: string | undefined;
 
     constructor(context: vscode.ExtensionContext) {
-        this.treeDataProvider = new TestDataProvider();
+        this.treeDataProvider = new TestDataProvider(context.extensionPath);
         // const tdp = vscode.window.registerTreeDataProvider('comments', this.treeDataProvider);
         this.tree = vscode.window.createTreeView('comments', { treeDataProvider: this.treeDataProvider });
         context.subscriptions.push(this.tree);
@@ -193,6 +193,12 @@ export class TestDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
     private onDidChangeTreeDataEmitter: vscode.EventEmitter<MyTreeItem> = new vscode.EventEmitter<MyTreeItem>();
     readonly onDidChangeTreeData: vscode.Event<MyTreeItem> = this.onDidChangeTreeDataEmitter.event;
 
+    constructor(
+        public readonly extensionPath: string,
+    ) {
+
+    }
+
     public sendDataChanged(item: MyTreeItem | undefined) {
         console.log("Refresh tree");
         this.onDidChangeTreeDataEmitter.fire(item);
@@ -208,7 +214,7 @@ export class TestDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
         if (element instanceof Comment) {
             return {
                 label: element.text,
-                iconPath: 'fa-sticky-note medium-red',
+                iconPath: path.join(this.extensionPath, "resources", "comments.svg"),
                 contextValue: COMMENT_CONTEXT_VALUE,
                 command: {
                     command: ON_DID_SELECT_COMMENT,
@@ -232,13 +238,16 @@ export class TestDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
     }
 
     async getChildren(element?: MyTreeItem): Promise<MyTreeItem[]> {
+        if (element == null) {
+            return this.getRootChildren();
+        }
         if (!(element instanceof Comment)) {
             element = element as string;
             if (comments.has(element)) {
                 return comments.get(element)!;
             }
         }
-        return this.getRootChildren();
+        return [];
     }
 
     async getRootChildren(): Promise<MyTreeItem[]> {
