@@ -1,4 +1,4 @@
-import * as theia from '@theia/plugin';
+import * as vscode from 'vscode';
 
 class Comment {
 
@@ -17,7 +17,7 @@ class Comment {
     }
 
     public doSomething(): string {
-        return `Comment ${this.id}: ${this.text}. Doing something`;
+        return `Doing something with comment ${this.id}: ${this.text}`;
     }
 
     // public get self(): Comment {
@@ -51,13 +51,15 @@ const COMMENT_CONTEXT_VALUE = "ext.tv.comment";
 export class Comments {
 
     treeDataProvider: TestDataProvider;
-    tree: theia.TreeView<MyTreeItem>;
+    tree: vscode.TreeView<MyTreeItem>;
 
     selectedUser: string | undefined;
 
-    constructor(context: theia.PluginContext) {
+    constructor(context: vscode.ExtensionContext) {
         this.treeDataProvider = new TestDataProvider();
-        this.tree = theia.window.createTreeView('comments', { treeDataProvider: this.treeDataProvider });
+        // const tdp = vscode.window.registerTreeDataProvider('comments', this.treeDataProvider);
+        this.tree = vscode.window.createTreeView('comments', { treeDataProvider: this.treeDataProvider });
+        context.subscriptions.push(this.tree);
 
         this.tree.onDidExpandElement(event => {
             // handle expanding
@@ -68,10 +70,7 @@ export class Comments {
         });
 
         context.subscriptions.push(
-            theia.commands.registerCommand({
-                id: 'treeViewSample.addUser',
-                label: '[TreeView] Add User'
-            }, args => this.addUser(args)));
+            vscode.commands.registerCommand('treeViewSample.addUser', args => this.addUser(args)));
 
         // context.subscriptions.push(
         //     theia.commands.registerCommand({
@@ -80,29 +79,18 @@ export class Comments {
         //     }, args => this.addUserProfile(args)));
 
         context.subscriptions.push(
-            theia.commands.registerCommand({
-                id: 'treeViewSample.addComment',
-                label: '[TreeView] Add Comment'
-            }, args => this.addComment(args)));
+            vscode.commands.registerCommand('treeViewSample.addComment', args => this.addComment(args)));
 
         context.subscriptions.push(
-            theia.commands.registerCommand({
-                id: ON_DID_SELECT_USER,
-                label: 'On did select user'
-            }, args => this.onDidSelectUser(args)));
+            vscode.commands.registerCommand(ON_DID_SELECT_USER, args => this.onDidSelectUser(args)));
 
         context.subscriptions.push(
-            theia.commands.registerCommand({
-                id: ON_DID_SELECT_COMMENT,
-                label: 'On did select comment'
-            }, args => this.onDidSelectComment(args)));
+            vscode.commands.registerCommand(ON_DID_SELECT_COMMENT, args => this.onDidSelectComment(args)));
 
 
         // DEMO OF https://github.com/theia-ide/theia/issues/4978
         context.subscriptions.push(
-            theia.commands.registerCommand({
-                id: CONTEXT_CMD_ID,
-            }, (arg: Comment) => {
+            vscode.commands.registerCommand(CONTEXT_CMD_ID, (arg: Comment) => {
                 // In VS Code, the same Comment instance that was added to the tree will be passed.
                 // In Theia, we lose the non-stringifiable fields, such as functions
                 console.log("right-click args", arg);
@@ -110,12 +98,12 @@ export class Comments {
                 console.log("is it a comment?", (arg instanceof Comment));
                 try {
                     // This will fail in Theia 'arg.doSomething() is not a function'
-                    theia.window.showInformationMessage("Doing something with comment:", arg.doSomething());
+                    vscode.window.showInformationMessage(arg.doSomething());
                 }
                 catch (err) {
                     const errMsg = "Doing something failed";
                     console.error(errMsg, err);
-                    theia.window.showErrorMessage(errMsg);
+                    vscode.window.showErrorMessage(errMsg);
                 }
             }));
     }
@@ -146,7 +134,7 @@ export class Comments {
     }
 
     addUser(...args: any[]) {
-        theia.window.showInputBox({
+        vscode.window.showInputBox({
             prompt: 'Type user name to be added to the list',
             placeHolder: 'User name'
         }).then(value => {
@@ -163,7 +151,7 @@ export class Comments {
 
     addComment(...args: any[]) {
         if (this.selectedUser) {
-            theia.window.showInputBox({
+            vscode.window.showInputBox({
                 prompt: 'Enter new comment',
                 placeHolder: 'Comment'
             }).then(value => {
@@ -200,10 +188,10 @@ export class Comments {
 
 type MyTreeItem = Comment | string;
 
-export class TestDataProvider implements theia.TreeDataProvider<MyTreeItem> {
+export class TestDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
 
-    private onDidChangeTreeDataEmitter: theia.EventEmitter<MyTreeItem> = new theia.EventEmitter<MyTreeItem>();
-    readonly onDidChangeTreeData: theia.Event<MyTreeItem> = this.onDidChangeTreeDataEmitter.event;
+    private onDidChangeTreeDataEmitter: vscode.EventEmitter<MyTreeItem> = new vscode.EventEmitter<MyTreeItem>();
+    readonly onDidChangeTreeData: vscode.Event<MyTreeItem> = this.onDidChangeTreeDataEmitter.event;
 
     public sendDataChanged(item: MyTreeItem | undefined) {
         console.log("Refresh tree");
@@ -216,14 +204,15 @@ export class TestDataProvider implements theia.TreeDataProvider<MyTreeItem> {
      * @param element The element for which [TreeItem](#TreeItem) representation is asked for.
      * @return [TreeItem](#TreeItem) representation of the element
      */
-    getTreeItem(element: MyTreeItem): theia.TreeItem | PromiseLike<theia.TreeItem> {
+    getTreeItem(element: MyTreeItem): vscode.TreeItem | PromiseLike<vscode.TreeItem> {
         if (element instanceof Comment) {
             return {
                 label: element.text,
                 iconPath: 'fa-sticky-note medium-red',
                 contextValue: COMMENT_CONTEXT_VALUE,
                 command: {
-                    id: ON_DID_SELECT_COMMENT,
+                    command: ON_DID_SELECT_COMMENT,
+                    title: "",
                     arguments: [element]
                 }
             };
@@ -233,11 +222,12 @@ export class TestDataProvider implements theia.TreeDataProvider<MyTreeItem> {
             label: element,
             iconPath: 'fa-user medium-yellow',
             command: {
-                id: ON_DID_SELECT_USER,
+                command: ON_DID_SELECT_USER,
+                title: "",
                 arguments: [element]
             },
 
-            collapsibleState: theia.TreeItemCollapsibleState.Expanded
+            collapsibleState: vscode.TreeItemCollapsibleState.Expanded
         };
     }
 

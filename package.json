@@ -9,33 +9,41 @@
   "files": [
     "src"
   ],
+  "main": "lib/tree-view-sample-plugin.js",
+  "activationEvents": [
+      "onView:comments"
+  ],
   "contributes": {
     "viewsContainers": {
-      "right": [
-        {
-          "id": "comments",
-          "title": "Comments",
-          "icon": "resources/comments.svg"
-        }
+      "activitybar": [
+          {
+              "icon": "resources/comments.svg",
+              "id": "commentsVC",
+              "title": "Comments"
+          }
       ]
     },
     "views": {
-      "comments": [
-        {
-          "id": "comments",
-          "name": "Comments"
-        },
-        {
-          "id": "todo",
-          "name": "TODO"
-        }
-      ]
+        "commentsVC": [
+            {
+                "id": "comments",
+                "name": "Comments List"
+            }
+        ]
     },
     "commands": [
       {
         "command": "test.context.cmd",
         "title": "Do something",
         "category": "Abc"
+      },
+      {
+        "command": "treeViewSample.addUser",
+        "title": "Add user"
+      },
+      {
+        "command": "treeViewSample.addComment",
+        "title": "Add comment"
       }
     ],
     "menus": {
@@ -48,28 +56,27 @@
     }
   },
   "devDependencies": {
-    "@theia/plugin": "next",
-    "@theia/plugin-packager": "latest",
     "@types/ftp": "^0.3.10",
     "rimraf": "2.6.2",
-    "typescript-formatter": "7.2.2",
-    "typescript": "2.9.2"
+    "typescript": "2.9.2",
+    "vscode": "^1.1.33"
   },
   "dependencies": {
     "ftp": "^0.3.10"
   },
   "scripts": {
+    "vscode:prepublish": "yarn && yarn run build",
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
-    "format-code": "tsfmt -r",
     "watch": "tsc -watch",
     "compile": "tsc",
-    "build": "yarn run format-code && yarn run compile && theia:plugin pack"
+    "build": "yarn run compile"
   },
   "engines": {
-    "theiaPlugin": "next"
+    "vscode": "^1.33.1"
   },
-  "theiaPlugin": {
-    "backend": "lib/tree-view-sample-plugin.js"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tetchel/theia-tree-bug"
   }
 }
