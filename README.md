@@ -4,6 +4,8 @@ This is a smallish sample for reproducing Theia bugs:
 - https://github.com/theia-ide/theia/issues/4975
 - https://github.com/theia-ide/theia/issues/4978
 
+See the `theia` branch for a version that works in Theia.
+
 Forked from: https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin replacing the simple tree items (strings) with more complex objects.
 
 Build the extension with `yarn run build` (or just [download it](https://raw.githubusercontent.com/tetchel/theia-tree-bug/master/tree_view_sample_plugin.theia)) and copy it into your `theia/plugins/` directory, then restart Theia to pick up the change. See the [original README](https://github.com/eclipse/che-theia-samples/tree/master/samples/tree-view-sample-plugin).

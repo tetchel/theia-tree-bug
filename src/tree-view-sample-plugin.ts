@@ -5,12 +5,12 @@
  * https://raw.githubusercontent.com/theia-ide/theia/tree-view/packages/plugin/src/theia.d.ts
  */
 
-import * as theia from '@theia/plugin';
+import * as vscode from 'vscode';
 import { Comments } from './comments';
 
-export function start(context: theia.PluginContext) {
+export function activate(context: vscode.ExtensionContext) {
     new Comments(context);
 }
 
-export function stop() {
+export function deactivate() {
 }
